@@ -3,9 +3,10 @@ package solution
 import (
 	"bufio"
 	"bytes"
-	"sort"
+	"container/heap"
 	"strconv"
 
+	"github.com/barszcz/advent-2022/internal/util"
 	"golang.org/x/exp/constraints"
 )
 
@@ -52,22 +53,21 @@ func (d *Day1) Part2(input []byte) string {
 	lines := bufio.NewScanner(bytes.NewReader(input))
 
 	var currentCalorieSum int
-	var calorieSums []int
+	calorieSums := &util.MaxHeap[int]{}
 
 	for lines.Scan() {
 		line := lines.Text()
 		if line == "" {
-			calorieSums = append(calorieSums, currentCalorieSum)
+			heap.Push(calorieSums, currentCalorieSum)
 			currentCalorieSum = 0
 			continue
 		}
 		currentCalorieSum += Must(strconv.Atoi(line))
 	}
 
-	sort.Sort(sort.Reverse(sort.IntSlice(calorieSums)))
 	var topThreeSum int
-	for _, calorieSum := range calorieSums[0:3] {
-		topThreeSum += calorieSum
+	for i := 0; i < 3; i++ {
+		topThreeSum += heap.Pop(calorieSums).(int)
 	}
 
 	return strconv.Itoa(topThreeSum)
