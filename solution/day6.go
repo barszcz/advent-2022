@@ -12,6 +12,7 @@ func init() {
 
 type Day6 struct{}
 
+// somewhat less efficient but much prettier code
 func (d *Day6) solveWithSets(input []byte, distinctCount int) string {
 	for i := range input {
 		if i < distinctCount {
@@ -25,6 +26,7 @@ func (d *Day6) solveWithSets(input []byte, distinctCount int) string {
 	panic("unreachable")
 }
 
+// no double-iteration but the code is uglier
 func (d *Day6) solveWithCountMap(input []byte, distinctCount int) string {
 	countMap := make(map[byte]int)
 	for i, char := range input {
@@ -42,7 +44,7 @@ func (d *Day6) solveWithCountMap(input []byte, distinctCount int) string {
 			delete(countMap, outChar)
 		}
 		if len(countMap) == distinctCount {
-			return strconv.Itoa(i + 1)
+			return strconv.Itoa(i + 1) // lol god dammit
 		}
 	}
 	panic("unreachable")
