@@ -12,28 +12,23 @@ func init() {
 
 type Day6 struct{}
 
-func (d *Day6) Part1(input []byte) string {
+func (d *Day6) solve(input []byte, distinctCount int) string {
 	for i := range input {
-		if i < 4 {
+		if i < distinctCount {
 			continue
 		}
-		charSet := util.NewSetFromSlice(input[i-4 : i])
-		if charSet.Size() == 4 {
+		charSet := util.NewSetFromSlice(input[i-distinctCount : i])
+		if charSet.Size() == distinctCount {
 			return strconv.Itoa(i)
 		}
 	}
 	panic("unreachable")
 }
 
+func (d *Day6) Part1(input []byte) string {
+	return d.solve(input, 4)
+}
+
 func (d *Day6) Part2(input []byte) string {
-	for i := range input {
-		if i < 14 {
-			continue
-		}
-		charSet := util.NewSetFromSlice(input[i-14 : i])
-		if charSet.Size() == 14 {
-			return strconv.Itoa(i)
-		}
-	}
-	panic("unreachable")
+	return d.solve(input, 14)
 }
