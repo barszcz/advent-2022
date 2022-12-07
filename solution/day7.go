@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"container/list"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -49,7 +50,7 @@ func (f File) Size() int {
 
 type Day7 struct{}
 
-func (d *Day7) Part1(input []byte) string {
+func (d *Day7) buildFS(input []byte) Directory {
 	lines := bufio.NewScanner(bytes.NewReader(input))
 	pwdStack := list.New()
 	for lines.Scan() {
@@ -93,9 +94,12 @@ func (d *Day7) Part1(input []byte) string {
 			size: size,
 		}
 	}
+	return pwdStack.Back().Value.(Directory)
+}
 
+func (d *Day7) Part1(input []byte) string {
+	rootDir := d.buildFS(input)
 	sizeSum := 0
-	rootDir := pwdStack.Back().Value.(Directory)
 	dirQueue := list.New()
 	dirQueue.PushBack(rootDir)
 
@@ -115,5 +119,26 @@ func (d *Day7) Part1(input []byte) string {
 }
 
 func (d *Day7) Part2(input []byte) string {
-	return ""
+	rootDir := d.buildFS(input)
+	totalSpaceNeeded := 30_000_000
+	diskSize := 70_000_000
+	currentFreeSpace := diskSize - rootDir.Size()
+	minSizeToConsider := totalSpaceNeeded - currentFreeSpace
+	smallestFileSize := math.MaxInt
+	dirQueue := list.New()
+	dirQueue.PushBack(rootDir)
+
+	for node := dirQueue.Front(); node != nil; node = node.Next() {
+		dir := node.Value.(Directory)
+		if dir.Size() >= minSizeToConsider && dir.Size() < smallestFileSize {
+			smallestFileSize = dir.Size()
+		}
+		for _, entry := range dir.contents {
+			if subdir, ok := entry.(Directory); ok {
+				dirQueue.PushBack(subdir)
+			}
+		}
+	}
+
+	return strconv.Itoa(smallestFileSize)
 }
