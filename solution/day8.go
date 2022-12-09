@@ -180,7 +180,6 @@ func (d *Day8) Part2(input []byte) string {
 
 	maxScore := 0
 	for i := range scores {
-		fmt.Println(scores[i])
 		for j := range scores[i] {
 			if scores[i][j] > maxScore {
 				maxScore = scores[i][j]
