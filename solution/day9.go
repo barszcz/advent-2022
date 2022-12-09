@@ -3,7 +3,6 @@ package solution
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -46,48 +45,33 @@ func (d *Day9) updateTailPosition(headPosition, tailPosition complex128) complex
 	return tailPosition
 }
 
-func (d *Day9) Part1(input []byte) string {
-	lines := bufio.NewScanner(bytes.NewReader(input))
-	var headPosition, tailPosition complex128
-	tailVisited := util.NewSet[complex128]()
-	tailVisited.Add(tailPosition)
-	for lines.Scan() {
-		instruction := strings.Split(lines.Text(), " ")
-		direction := instruction[0]
-		steps := Must(strconv.Atoi(instruction[1]))
-		for i := 0; i < steps; i++ {
-			headPosition += day9directions[direction]
-			tailPosition = d.updateTailPosition(headPosition, tailPosition)
-			tailVisited.Add(tailPosition)
-		}
-	}
-	return strconv.Itoa(tailVisited.Size())
-}
-
-func (d *Day9) Part2(input []byte) string {
+func (d *Day9) solve(input []byte, numKnots int) string {
 	lines := bufio.NewScanner(bytes.NewReader(input))
 	var knotPositions []complex128
-	for i := 0; i < 10; i++ {
+	for i := 0; i < numKnots; i++ {
 		knotPositions = append(knotPositions, 0)
 	}
 	tailVisited := util.NewSet[complex128]()
 	tailVisited.Add(0)
-	x := 0
 	for lines.Scan() {
-		if x < 3 {
-			fmt.Println(knotPositions)
-		}
 		instruction := strings.Split(lines.Text(), " ")
 		direction := instruction[0]
 		steps := Must(strconv.Atoi(instruction[1]))
 		for i := 0; i < steps; i++ {
 			knotPositions[0] += day9directions[direction]
-			for j := 1; j < 10; j++ {
+			for j := 1; j < numKnots; j++ {
 				knotPositions[j] = d.updateTailPosition(knotPositions[j-1], knotPositions[j])
 			}
-			tailVisited.Add(knotPositions[9])
+			tailVisited.Add(knotPositions[numKnots-1])
 		}
-		x += 1
 	}
 	return strconv.Itoa(tailVisited.Size())
+}
+
+func (d *Day9) Part1(input []byte) string {
+	return d.solve(input, 2)
+}
+
+func (d *Day9) Part2(input []byte) string {
+	return d.solve(input, 10)
 }
